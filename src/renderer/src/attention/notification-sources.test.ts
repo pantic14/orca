@@ -16,6 +16,7 @@ import { dispatchStructuredTurnCompletionAttention } from '@/components/native-c
 import type { StructuredTab } from '@/components/native-chat/structured-agent-session-tabs'
 import { buildNotificationSourceOptions } from './notification-sources'
 import { resolveNotificationTabOwner } from './notification-subject-owner'
+import { playDesktopNotificationSound } from '@/lib/desktop-notification-sound'
 
 vi.mock('@/store', () => ({ useAppStore: { getState: () => store.getState() } }))
 vi.mock('@/lib/desktop-notification-sound', () => ({ playDesktopNotificationSound: vi.fn() }))
@@ -308,3 +309,51 @@ it('omits a removed source even when its live binding and catalog record remain'
   expect(sent).toHaveLength(2)
   expect(sent.map((request) => request.notificationSourceId)).toEqual([undefined, undefined])
 })
+
+it.each(['claude', 'codex'] as const)(
+  'preserves sidebar unread and restores desktop requests and sound after unmuting %s',
+  async (agentType) => {
+    const tab = seed('local', 'local-pty', false)
+    const settings = createGlobalSettingsFixture()
+    store.setState({ settings, notificationMutedTabIds: {} })
+    vi.mocked(window.api.notifications.dispatch).mockResolvedValueOnce({
+      delivered: false,
+      reason: 'tab-muted'
+    })
+    vi.mocked(playDesktopNotificationSound).mockClear()
+    const event = {
+      source: 'agent-task-complete' as const,
+      paneKey,
+      agentStatusSnapshot: {
+        state: 'done' as const,
+        agentType,
+        prompt: 'test',
+        stateStartedAt: 100
+      }
+    }
+    store.getState().setTabNotificationsMuted('terminal', true)
+    dispatchTerminalNotification(tab.worktreeId, event)
+    await Promise.resolve()
+    expect(
+      store.getState().worktreesByRepo.repo1?.find((row) => row.id === tab.worktreeId)?.isUnread
+    ).toBe(true)
+    expect(store.getState().unreadAgentCompletionPanes[paneKey]).toBe('agent-completion')
+    expect(window.api.notifications.dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ paneKey, desktopMuted: true })
+    )
+    expect(playDesktopNotificationSound).not.toHaveBeenCalled()
+
+    store.getState().setTabNotificationsMuted('terminal', false)
+    dispatchTerminalNotification(tab.worktreeId, {
+      ...event,
+      agentStatusSnapshot: { ...event.agentStatusSnapshot, stateStartedAt: 200 }
+    })
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(store.getState().notificationMutedTabIds).toEqual({})
+    expect(window.api.notifications.dispatch).toHaveBeenCalledTimes(2)
+    expect(sent).toHaveLength(1)
+    expect(sent[0]?.desktopMuted).toBeUndefined()
+    expect(playDesktopNotificationSound).toHaveBeenCalledTimes(1)
+  }
+)

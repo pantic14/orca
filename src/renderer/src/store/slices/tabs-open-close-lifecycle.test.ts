@@ -215,6 +215,8 @@ describe('TabsSlice', () => {
       const t3 = store.getState().createUnifiedTab(WT, 'terminal')
 
       store.getState().activateTab(t2.id)
+      store.getState().setTabNotificationsMuted(t2.entityId, true)
+      store.getState().setTabNotificationsMuted(t3.entityId, true)
 
       const result = store.getState().closeUnifiedTab(t2.id)
 
@@ -222,6 +224,7 @@ describe('TabsSlice', () => {
       const state = store.getState()
       expect(state.unifiedTabsByWorktree[WT]).toHaveLength(2)
       expect(state.groupsByWorktree[WT][0].activeTabId).toBe(t3.id)
+      expect(state.notificationMutedTabIds).toEqual({ [t3.entityId]: true })
     })
 
     it('selects left neighbor when closing the rightmost tab', () => {

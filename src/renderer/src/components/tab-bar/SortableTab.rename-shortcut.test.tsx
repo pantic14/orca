@@ -20,8 +20,10 @@ const storeState = vi.hoisted(
     terminalLayoutsByTabId: Record<string, unknown>
     worktreesByRepo: Record<string, unknown>
     unreadTerminalTabs: Record<string, boolean>
+    notificationMutedTabIds: Record<string, true>
   } => ({
     agentStatusByPaneKey: {},
+    notificationMutedTabIds: {},
     clearTabLaunchAgent: vi.fn(),
     ptyIdsByTabId: {} as Record<string, string[]>,
     retainedAgentsByPaneKey: {},
@@ -86,6 +88,8 @@ vi.mock('@dnd-kit/sortable', () => ({
 }))
 
 vi.mock('lucide-react', () => ({
+  Bell: () => null,
+  BellOff: () => null,
   ArrowDown: function ArrowDown(props: Record<string, unknown>) {
     return { type: 'ArrowDown', props }
   },

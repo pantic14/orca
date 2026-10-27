@@ -150,6 +150,8 @@ export type PersistedUIState = {
   dismissedUpdateNudgeId?: string | null
   /** Whether Orca already tried triggering the macOS notification permission dialog; prevents re-firing every launch. */
   notificationPermissionRequested?: boolean
+  /** Client-local tab preference; never forwarded to execution hosts or phones. */
+  notificationMutedTabIds?: Record<string, true>
   /** Once the "your sessions won't be interrupted" reassurance card is seen, never show it again. */
   updateReassuranceSeen?: boolean
   /** Renderer ui:set acknowledgments by pane/turn timestamp; persist so seen rows stay read after restart. */

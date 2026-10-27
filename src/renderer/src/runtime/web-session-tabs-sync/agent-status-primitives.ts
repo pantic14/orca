@@ -9,6 +9,7 @@ import type { RetiredTerminalTabSweepState } from '../../store/slices/retired-te
 import { buildRetiredTerminalTabStateSweepPatch } from '../../store/slices/retired-terminal-tab-state-sweep'
 import { isMirroredTerminalSurfaceId } from './terminal-surfaces'
 import { isAgentStatusFresh } from './state-equality-core'
+import { omitRecordKeys } from '../../store/slices/worktrees/teardown/record-key-omission'
 
 export function isMirroredAgentStatusOwnedBy(
   entry: AgentStatusEntry,
@@ -187,7 +188,7 @@ export function buildRetractedMirroredTabSweepPatch(
   }
   // Retraction may rekey live panes; retain activity cutoffs so republication cannot replay user-cleared activity (ssh-execution-boundary).
   const previousAgentStatuses = sweepState.agentStatusByPaneKey
-  let sweep: Partial<RetiredTerminalTabSweepState> | null = null
+  let sweep: Partial<WebSessionTabsSyncState> | null = null
   for (const tabId of retractedTabIds) {
     const paneKeys = scopedPaneKeysByTabId.get(tabId)
     const patch = buildRetiredTerminalTabStateSweepPatch(sweepState, [tabId], undefined, {
@@ -198,6 +199,15 @@ export function buildRetractedMirroredTabSweepPatch(
       sweep ??= {}
       Object.assign(sweep, patch)
       sweepState = { ...sweepState, ...patch }
+    }
+  }
+  if (state.notificationMutedTabIds) {
+    const notificationMutedTabIds = omitRecordKeys(
+      state.notificationMutedTabIds,
+      retractedTabIds.filter((tabId) => !scopedPaneKeysByTabId.has(tabId))
+    )
+    if (notificationMutedTabIds !== state.notificationMutedTabIds) {
+      sweep = { ...sweep, notificationMutedTabIds }
     }
   }
   if (!sweep?.agentStatusByPaneKey || !batchContext) {

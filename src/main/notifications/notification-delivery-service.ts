@@ -124,6 +124,10 @@ export function createNotificationDeliveryService(
         }
       }
 
+      if (request.desktopMuted) {
+        return { delivered: false, reason: 'tab-muted' }
+      }
+
       if (!desktopAllowed || hostMuted) {
         return {
           delivered: false,

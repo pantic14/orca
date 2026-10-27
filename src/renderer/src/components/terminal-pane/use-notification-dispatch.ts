@@ -8,6 +8,8 @@ import {
 } from '../../../../shared/notification-source'
 import { useCallback } from 'react'
 import { useAppStore } from '@/store'
+import { parsePaneKey } from '../../../../shared/stable-pane-id'
+import { resolveTerminalTabPtyOwnership } from '@/lib/terminal-tab-for-pty-id'
 import { resolveCommittedTitleAgentType } from '@/lib/pane-agent-evidence'
 import { buildAgentNotificationId } from '../../../../shared/agent-notification-id'
 import { agentMainAgentVerdict } from '../../../../shared/agent-main-agent-verdict'
@@ -165,9 +167,16 @@ export function dispatchTerminalNotification(
     requested = true
     const owner = resolveTerminalNotificationOwner(state, worktreeId, event)
     const executionHost = notificationExecutionHostForOwner(owner)
+    const tabId = request.subjectKey ? parsePaneKey(request.subjectKey)?.tabId : undefined
+    const binding =
+      !tabId && event.ptyId ? resolveTerminalTabPtyOwnership(state, worktreeId, event.ptyId) : null
+    const notificationTabId = tabId ?? (binding?.kind === 'owned' ? binding.tabId : undefined)
     deliverAgentAttentionNotification(
       {
         source: event.source,
+        ...(notificationTabId && state.notificationMutedTabIds[notificationTabId]
+          ? { desktopMuted: true }
+          : {}),
         ...(notificationId ? { notificationId } : {}),
         worktreeId: request.workspaceId,
         ...(executionHost ? { executionHost } : {}),

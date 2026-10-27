@@ -67,6 +67,8 @@ export type NotificationDispatchRequest = {
   structuredOrigin?: StructuredAttentionOrigin
   /** The execution host already pushed this to its paired phones, so main must not fan it out again. */
   mobileDeliveredByHost?: boolean
+  /** Suppress only this client's banner/sound after independent mobile delivery. */
+  desktopMuted?: boolean
 }
 
 export type NotificationDispatchResult = {
@@ -76,6 +78,7 @@ export type NotificationDispatchResult = {
     | 'disabled'
     | 'source-disabled'
     | 'host-muted'
+    | 'tab-muted'
     | 'suppressed-focus'
     | 'cooldown'
     | 'not-supported'

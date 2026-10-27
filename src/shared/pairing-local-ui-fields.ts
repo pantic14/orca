@@ -23,6 +23,7 @@ export const PAIRING_LOCAL_UI_FIELDS = [
   'agentsReadFilter',
   'agentsGroupBy',
   'activityClearedAtByPaneKey',
+  'notificationMutedTabIds',
   'manuallyUnreadTurnsByPaneKey'
 ] as const satisfies readonly (keyof PersistedUIState)[]
 

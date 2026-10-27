@@ -162,6 +162,7 @@ export function createTabsCloseActions(
               landsOnEmptiedWorktree(current, worktreeId, nextTabs.length)
             return {
               unifiedTabsByWorktree: { ...current.unifiedTabsByWorktree, [worktreeId]: nextTabs },
+              notificationMutedTabIds: omitRecordKeys(current.notificationMutedTabIds, [tabId]),
               groupsByWorktree: {
                 ...current.groupsByWorktree,
                 [worktreeId]: nextGroups
@@ -214,7 +215,10 @@ export function createTabsCloseActions(
                   settleAttentionRemovedBy(
                     set,
                     get,
-                    () => set((current) => removeTabsAttention(current, [tabId])),
+                    () => {
+                      get().setTabNotificationsMuted(tabId, false)
+                      set((current) => removeTabsAttention(current, [tabId]))
+                    },
                     { tabsBefore: state }
                   )
               }

@@ -15,6 +15,7 @@ export type NotificationDispatchMockState = {
   activeView: string
   activeWorktreeId: string | null
   activeTabId: string | null
+  notificationMutedTabIds: Record<string, true>
   activeTabIdByWorktree: Record<string, string | null>
   activeGroupIdByWorktree: Record<string, string | null>
   floatingWorkspacePanelOpen: boolean
@@ -70,6 +71,7 @@ function buildNotificationDispatchMockState(): NotificationDispatchMockState {
     activeView: 'terminal',
     activeWorktreeId: 'wt-secondary',
     activeTabId: 'tab-1',
+    notificationMutedTabIds: {},
     activeTabIdByWorktree: {},
     activeGroupIdByWorktree: {},
     floatingWorkspacePanelOpen: false,

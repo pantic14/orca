@@ -30,6 +30,7 @@ it.each([true, false])('cleans unrelated tabs when a collision is mirrored=%s', 
   const normal = makePaneKey(ordinary, LEAF_ID)
   const state = makeState({
     acknowledgedAgentsByPaneKey: { [foreign]: 2 },
+    notificationMutedTabIds: { [collision]: true, [ordinary]: true },
     agentStatusByPaneKey: Object.fromEntries(
       [owned, normal].map((paneKey) => [
         paneKey,
@@ -61,6 +62,7 @@ it.each([true, false])('cleans unrelated tabs when a collision is mirrored=%s', 
     expect(after.agentStatusByPaneKey[normal]).toBeUndefined()
     expect(after.recentlyClosedAgentStatusTabIds?.[ordinary]).toBeDefined()
     expect(after.recentlyClosedAgentStatusTabIds?.[collision]).toBeUndefined()
+    expect(after.notificationMutedTabIds).toEqual({ [collision]: true })
     expect(getForegroundTerminalTabLastSeenAtById()[ordinary]).toBeUndefined()
     expect(getForegroundTerminalTabLastSeenAtById()[collision]).toBeDefined()
   } finally {

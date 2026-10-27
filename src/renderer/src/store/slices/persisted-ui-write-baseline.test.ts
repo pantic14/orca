@@ -35,6 +35,7 @@ function makeBaseline(overrides: Partial<PersistedUIWriteBaseline> = {}): Persis
     acknowledgedAgentsByPaneKey: {},
     activityClearedAtByPaneKey: {},
     manuallyUnreadTurnsByPaneKey: {},
+    notificationMutedTabIds: {},
     ...overrides
   }
 }

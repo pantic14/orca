@@ -52,6 +52,7 @@ describe('web UI preload API pairing-local fields', () => {
     agentsReadFilter: 'unread',
     agentsGroupBy: 'project',
     activityClearedAtByPaneKey: { 'tab-1:leaf-1': 123 },
+    notificationMutedTabIds: { 'tab-1': true },
     manuallyUnreadTurnsByPaneKey: { 'tab-1:leaf-1': 321 }
   }
   const hostUiSamples: Record<PairingLocalUiField, unknown> = {
@@ -71,6 +72,7 @@ describe('web UI preload API pairing-local fields', () => {
     agentsReadFilter: 'all',
     agentsGroupBy: 'status',
     activityClearedAtByPaneKey: { 'tab-2:leaf-2': 456 },
+    notificationMutedTabIds: { 'tab-2': true },
     manuallyUnreadTurnsByPaneKey: { 'tab-2:leaf-2': 654 }
   }
 

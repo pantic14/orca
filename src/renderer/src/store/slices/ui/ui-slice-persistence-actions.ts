@@ -3,6 +3,20 @@ import type { UISlice, UISliceGet, UISliceSet } from './ui-slice-contract'
 export function createUiPersistenceActions(set: UISliceSet, _get: UISliceGet): Partial<UISlice> {
   return {
     persistedUIReady: false,
+    notificationMutedTabIds: {},
+    setTabNotificationsMuted: (tabId, muted) =>
+      set((s) => {
+        if (!tabId || Boolean(s.notificationMutedTabIds[tabId]) === muted) {
+          return s
+        }
+        const notificationMutedTabIds = { ...s.notificationMutedTabIds }
+        if (muted) {
+          notificationMutedTabIds[tabId] = true
+        } else {
+          delete notificationMutedTabIds[tabId]
+        }
+        return { notificationMutedTabIds }
+      }),
     persistedUIWriteBaseline: null,
     persistedUIWriteInFlightCounts: {},
     notePersistedUIWriteStarted: (fields) =>

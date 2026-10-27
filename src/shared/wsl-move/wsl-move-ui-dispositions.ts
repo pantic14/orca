@@ -25,6 +25,7 @@ export const UI_STATE_DISPOSITIONS = {
   acknowledgedAgentsByPaneKey: moveDisposition(38, { note: 'Pane keys are kept.' }),
   activityClearedAtByPaneKey: moveDisposition(38, { note: 'Pane keys are kept.' }),
   manuallyUnreadTurnsByPaneKey: moveDisposition(38, { note: 'Pane keys are kept.' }),
+  notificationMutedTabIds: notApplicableDisposition(38, 'Client-local tab ids are kept.'),
   trustedOrcaHooks: {
     disposition: 'rewrite-desktop',
     item: 40,

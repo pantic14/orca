@@ -21,6 +21,7 @@ import { preventMiddleButtonDefault } from './middle-button-default-guard'
 import { useSortableTabRename } from './use-sortable-tab-rename'
 import { useTabRenameReturnFocus } from './use-tab-rename-return-focus'
 import { SortableTabContextMenu } from './SortableTabContextMenu'
+import { TabNotificationMuteIndicator } from './TabNotificationMuteIndicator'
 import { useSortableTabContextMenu } from './use-sortable-tab-context-menu'
 import { translate } from '@/i18n/i18n'
 import { TAB_LABEL_WIDTH_CLASSES } from './tab-width-rules'
@@ -38,14 +39,12 @@ import type { StructuredChatTabNamingFailure } from '@/runtime/structured-conver
 import { useNativeChatNamingFailure } from './use-native-chat-naming-failure'
 import { NativeChatNamingErrorBlock, NativeChatNamingFailedDialog } from './NativeChatNamingFailure'
 
-/** What the strip draws for a terminal or native chat tab; never a source of agent identity. */
-type SortableTabModel = Pick<
-  TerminalTab,
-  'id' | 'worktreeId' | 'title' | 'customTitle' | 'color' | 'shellOverride' | 'launchAgent'
->
-
 export type SortableTabProps = {
-  tab: SortableTabModel
+  /** What the strip draws; never a source of agent identity. */
+  tab: Pick<
+    TerminalTab,
+    'id' | 'worktreeId' | 'title' | 'customTitle' | 'color' | 'shellOverride' | 'launchAgent'
+  >
   /** The tab's agent, resolved by the caller from its own source of truth (pane signals or the chat's provider). */
   agent: TerminalAgent | null
   unifiedTabId: string
@@ -298,6 +297,7 @@ export default function SortableTab({
           style={{ backgroundColor: tab.color }}
         />
       )}
+      {!isEditing && <TabNotificationMuteIndicator tabId={tab.id} />}
       {isExpanded && !isEditing && (
         <button
           className={`mr-1 flex items-center justify-center w-4 h-4 rounded-sm shrink-0 ${

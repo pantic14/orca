@@ -28,6 +28,7 @@ const TERMINAL_REFUSALS: ReadonlySet<NotificationDispatchResult['reason']> = new
   'disabled',
   'source-disabled',
   'host-muted',
+  'tab-muted',
   'not-supported',
   'blocked-by-system',
   'invalid-request'
@@ -84,6 +85,9 @@ function submitNow(
     // Main reserves cooldown before replying; counting from reply conservatively waits longer.
     requests.cooldownEndsAt = Date.now() + NOTIFICATION_COOLDOWN_MS
     if (result && !result.delivered && TERMINAL_REFUSALS.has(result.reason)) {
+      if (result.reason === 'tab-muted') {
+        requests.cooldownEndsAt = 0
+      }
       requests.held = null
       clearTimer(requests)
       return

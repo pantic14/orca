@@ -239,6 +239,7 @@ export type WebSessionTabsSyncState = Pick<
       | 'localOnlyScrollbackByTabId'
       | 'migrationUnsupportedByPtyId'
       | 'manuallyUnreadTurnsByPaneKey'
+      | 'notificationMutedTabIds'
       | 'paneForegroundAgentByPaneKey'
       | 'pendingStartupByTabId'
       | 'recentlyClosedAgentStatusTabIds'

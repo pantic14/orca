@@ -105,6 +105,7 @@ function dispatchStructuredAttention(
       deliverAgentAttentionNotification(
         {
           source: 'agent-task-complete',
+          ...(state.notificationMutedTabIds[tab.id] ? { desktopMuted: true } : {}),
           surface: 'agent-session',
           // Shared phone/desktop ids let subject-based acknowledgment retire both notifications.
           notificationId: attentionKey,

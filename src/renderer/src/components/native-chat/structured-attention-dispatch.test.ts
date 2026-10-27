@@ -115,6 +115,7 @@ function seed(overrides?: {
     activeWorktreeId:
       overrides?.activeWorktreeId === undefined ? 'other-workspace' : overrides.activeWorktreeId,
     unreadTerminalTabs: {},
+    notificationMutedTabIds: {},
     unreadTerminalPanes: {},
     unreadAgentCompletionPanes: {},
     settings: settingsWith(overrides?.groupAttention ?? true),
@@ -228,6 +229,29 @@ describe('dispatchStructuredTurnCompletionAttention', () => {
       tabDot: 'agent-completion',
       surfaceDot: 'agent-completion'
     })
+  })
+
+  it('mutes only desktop delivery while keeping unread and remote mobile routing', () => {
+    store.getState().setTabNotificationsMuted(CHAT_TAB, true)
+    dispatchStructuredTurnCompletionAttention(structuredTab(), completion(), {
+      kind: 'environment',
+      environmentId: 'env-1'
+    })
+    expect(onlyDispatch()).toMatchObject({
+      desktopMuted: true,
+      executionHost: 'runtime:env-1'
+    })
+    expect(onlyDispatch().mobileDeliveredByHost).toBeUndefined()
+    expect(indicators()).toEqual({
+      workspaceBold: true,
+      paneDot: 'agent-completion',
+      tabDot: 'agent-completion',
+      surfaceDot: 'agent-completion'
+    })
+    store.getState().setTabNotificationsMuted(CHAT_TAB, false)
+    expect(dispatched).toHaveLength(1)
+    dispatchStructuredTurnCompletionAttention(structuredTab(), completion({ turnId: 'turn-2' }))
+    expect(dispatched[1]?.desktopMuted).toBeUndefined()
   })
 
   it.each(['failure', 'cancellation'] as const)(

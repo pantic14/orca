@@ -56,6 +56,7 @@ describe('client UI RPC pairing-local field seams', () => {
     agentsReadFilter: 'unread',
     agentsGroupBy: 'project',
     activityClearedAtByPaneKey: { 'tab-1:leaf-1': 123 },
+    notificationMutedTabIds: { 'tab-1': true },
     manuallyUnreadTurnsByPaneKey: { 'tab-1:leaf-1': 321 }
   }
 

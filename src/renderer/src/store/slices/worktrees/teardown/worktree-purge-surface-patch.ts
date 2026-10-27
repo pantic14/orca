@@ -28,6 +28,7 @@ export function buildWorktreePurgeSurfacePatch(
   const nextAgentStatusByPaneKey = omitByPaneKeyTabPrefix(s.agentStatusByPaneKey)
   return {
     localOnlyScrollbackByTabId: omitByTabId(s.localOnlyScrollbackByTabId),
+    notificationMutedTabIds: omitByTabId(s.notificationMutedTabIds),
     runtimePaneTitlesByTabId: omitByTabId(s.runtimePaneTitlesByTabId),
     automaticAgentResumeClaimsByTabId: omitByTabId(s.automaticAgentResumeClaimsByTabId),
     nativeChatLaunchPromptByTabId: omitByTabId(s.nativeChatLaunchPromptByTabId),

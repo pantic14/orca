@@ -23,6 +23,7 @@ export function createInitialStoreState(getState: () => StoreState): StoreState 
       }
     },
     unreadTerminalTabs: {},
+    notificationMutedTabIds: {},
     deleteStateByWorktreeId: {},
     worktreesByRepo: {
       repo1: [{ id: 'wt-1', repoId: 'repo1', path: '/tmp/wt-1', displayName: 'feat/notis' }]

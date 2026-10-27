@@ -200,6 +200,7 @@ export const UiUpdateFields = z
     // Share the release-channel predicate so new channel overrides cannot silently fail parsing.
     releaseChannelOverride: z.custom<ReleaseChannel>(isReleaseChannel).nullable().optional(),
     notificationPermissionRequested: z.boolean().optional(),
+    notificationMutedTabIds: z.record(z.string(), z.literal(true)).optional(),
     updateReassuranceSeen: z.boolean().optional(),
     osc52ClipboardDefaultOnNoticePending: z.boolean().optional(),
     acknowledgedAgentsByPaneKey: z.record(z.string(), z.number().finite()).optional(),

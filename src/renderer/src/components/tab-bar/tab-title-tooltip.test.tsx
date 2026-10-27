@@ -97,16 +97,18 @@ vi.mock('../../../../shared/agent-title-decoration', () => ({
 vi.mock('../../store', () => ({
   useAppStore: (
     selector: (state: {
+      notificationMutedTabIds: Record<string, true>
       unreadTerminalTabs: Record<string, boolean>
       agentStatusByPaneKey: Record<string, never>
     }) => unknown
-  ) => selector({ unreadTerminalTabs: {}, agentStatusByPaneKey: {} })
+  ) => selector({ notificationMutedTabIds: {}, unreadTerminalTabs: {}, agentStatusByPaneKey: {} })
 }))
 
 vi.mock('@/store', () => ({
   useAppStore: (
     selector: (state: {
       openMarkdownPreview: () => void
+      notificationMutedTabIds: Record<string, true>
       settings: null
       unreadTerminalTabs: Record<string, boolean>
       agentStatusByPaneKey: Record<string, never>
@@ -118,6 +120,7 @@ vi.mock('@/store', () => ({
   ) =>
     selector({
       openMarkdownPreview: vi.fn(),
+      notificationMutedTabIds: {},
       settings: null,
       unreadTerminalTabs: {},
       agentStatusByPaneKey: {},

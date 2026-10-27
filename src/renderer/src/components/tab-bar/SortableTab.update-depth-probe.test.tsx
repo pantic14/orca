@@ -11,6 +11,7 @@ import SortableTab from './SortableTab'
 import { requestTerminalTabRename } from './terminal-tab-rename-request'
 
 type ProbeState = {
+  notificationMutedTabIds: Record<string, true>
   unreadTerminalTabs: Record<string, boolean>
   unreadAgentCompletionPanes: Record<string, boolean>
   agentStatusByPaneKey: Record<string, unknown>
@@ -34,6 +35,7 @@ async function createProbeStore(): Promise<StoreApiWithHook> {
   if (!globals[globalKey]) {
     const { create } = await import('zustand')
     globals[globalKey] = create<ProbeState>(() => ({
+      notificationMutedTabIds: {},
       unreadTerminalTabs: {},
       unreadAgentCompletionPanes: {},
       agentStatusByPaneKey: {},
@@ -174,12 +176,23 @@ function Harness({ tab }: { tab: TerminalTab }): ReactElement {
 
 afterEach(() => {
   cleanup()
-  probeStore.setState({ unreadTerminalTabs: {}, agentStatusEpoch: 0 })
+  probeStore.setState({ unreadTerminalTabs: {}, agentStatusEpoch: 0, notificationMutedTabIds: {} })
   renderCount = 0
   tabRenderCount = 0
 })
 
 describe('SortableTab update-depth probe', () => {
+  it('updates the mute indicator without re-rendering unrelated tab chrome', () => {
+    const view = render(<Harness tab={makeTab()} />)
+    const mountRenders = tabRenderCount
+    expect(view.container.querySelector('svg.lucide-bell-off')).toBeNull()
+    act(() => probeStore.setState({ notificationMutedTabIds: { 'terminal-tab-1': true } }))
+    expect(view.container.querySelector('svg.lucide-bell-off')).not.toBeNull()
+    expect(tabRenderCount).toBe(mountRenders)
+    act(() => probeStore.setState({ notificationMutedTabIds: {} }))
+    expect(view.container.querySelector('svg.lucide-bell-off')).toBeNull()
+  })
+
   it('settles when the rename shortcut targets this tab', () => {
     const { container } = render(<Harness tab={makeTab()} />)
     act(() => requestTerminalTabRename('terminal-tab-1'))

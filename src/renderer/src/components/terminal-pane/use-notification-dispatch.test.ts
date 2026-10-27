@@ -10,6 +10,7 @@ import {
   STALE_LEAF_ID,
   STALE_PANE_KEY,
   getLastNotificationDispatchArg,
+  playDesktopNotificationSound,
   makeAgentStatus,
   resetNotificationDispatchMockState,
   stubDocumentFocus,
@@ -88,6 +89,31 @@ describe('dispatchTerminalNotification', () => {
     })
   })
 
+  it.each(['agent-task-complete', 'terminal-bell'] as const)(
+    'marks only a muted terminal tab desktop-muted for %s, without dropping unread',
+    async (source) => {
+      mockState.notificationMutedTabIds = { 'tab-1': true }
+      vi.mocked(window.api.notifications.dispatch).mockResolvedValueOnce({
+        delivered: false,
+        reason: 'tab-muted'
+      })
+      dispatchTerminalNotification('wt-primary', { source, paneKey })
+      await Promise.resolve()
+      expect(getLastNotificationDispatchArg()?.desktopMuted).toBe(true)
+      expect(playDesktopNotificationSound).not.toHaveBeenCalled()
+      if (source === 'agent-task-complete') {
+        expect(mockState.markAgentAttentionUnread).toHaveBeenCalledWith(
+          expect.objectContaining({ subjectKey: paneKey, reason: 'agent-completion' })
+        )
+      }
+      mockState.notificationMutedTabIds = { 'another-tab': true }
+      dispatchTerminalNotification('wt-primary', { source, paneKey })
+      await Promise.resolve()
+      expect(getLastNotificationDispatchArg()?.desktopMuted).toBeUndefined()
+      expect(playDesktopNotificationSound).toHaveBeenCalledTimes(1)
+    }
+  )
+
   it('builds the notification id from a completion snapshot, not the pinned working row', () => {
     const pinnedWorkingStartedAt = NOW - 60_000
     // Match row agent identity to the event or rejection makes both fallback outcomes pass vacuously.
@@ -120,6 +146,12 @@ describe('dispatchTerminalNotification', () => {
         })
       })
     )
+  })
+
+  it('resolves a muted tab from its PTY when an older event has no pane key', () => {
+    mockState.notificationMutedTabIds = { 'tab-1': true }
+    dispatchTerminalNotification('wt-primary', { source: 'terminal-bell', ptyId: 'pty-1' })
+    expect(getLastNotificationDispatchArg()?.desktopMuted).toBe(true)
   })
 
   it.each([

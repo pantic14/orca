@@ -153,6 +153,8 @@ export type UISliceCore = {
   /** Session-local protection for turns explicitly marked unread. */
   manuallyUnreadTurnsByPaneKey: Record<string, number>
   clearManuallyUnreadTurns: (paneKeys: string[]) => void
+  notificationMutedTabIds: Record<string, true>
+  setTabNotificationsMuted: (tabId: string, muted: boolean) => void
   activeView: TopLevelView
   previousViewBeforeTasks: Exclude<UiViewHistory, 'tasks'>
   previousViewBeforeSettings: Exclude<UiViewHistory, 'settings'>

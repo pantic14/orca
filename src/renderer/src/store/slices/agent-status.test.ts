@@ -470,6 +470,7 @@ afterEach(() => {
         })
         const main = await underFakeTimers(drawTabsFromMain(store))
         const before = store.getState()
+        store.getState().setTabNotificationsMuted(chat.id, true)
 
         store.getState().closeTab('tab-closed')
 
@@ -496,6 +497,7 @@ afterEach(() => {
         expect(closed.acknowledgedAgentsByPaneKey[paneKey]).toBeUndefined()
         expect(closed.activityClearedAtByPaneKey[paneKey]).toBeUndefined()
         expect(closed.manuallyUnreadTurnsByPaneKey[paneKey]).toBeUndefined()
+        expect(closed.notificationMutedTabIds[chat.id]).toBeUndefined()
       }
     )
 

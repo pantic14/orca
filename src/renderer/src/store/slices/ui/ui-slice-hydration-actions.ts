@@ -248,6 +248,11 @@ export function createUiHydrationActions(set: UISliceSet, _get: UISliceGet): Par
           codexSharedSettingsNoticeSeen: ui.codexSharedSettingsNoticeSeen === true,
           claudeDiffPanelNoticeSeen: ui.claudeDiffPanelNoticeSeen === true,
           ...hydrateAgentReadState(ui),
+          notificationMutedTabIds: Object.fromEntries(
+            Object.entries(ui.notificationMutedTabIds ?? {}).filter(
+              ([tabId, muted]) => tabId.length > 0 && muted === true
+            )
+          ),
           workspaceCleanupDismissals: sanitizeWorkspaceCleanupDismissals(
             ui.workspaceCleanup?.dismissals
           ),

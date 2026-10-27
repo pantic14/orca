@@ -8,12 +8,14 @@ import { REQUEST_ACTIVE_TERMINAL_PANE_SPLIT_EVENT } from '@/constants/terminal'
 import { requestActiveTerminalPaneSplit } from './request-active-terminal-pane-split'
 import { SortableTabContextMenu } from './SortableTabContextMenu'
 
-const storeMock = vi.hoisted(() => ({
+const storeMock = vi.hoisted((): { state: Record<string, unknown> } => ({
   state: {
     keybindings: {},
+    notificationMutedTabIds: {},
+    setTabNotificationsMuted: vi.fn(),
     unifiedTabsByWorktree: {},
     groupsByWorktree: {}
-  } as Record<string, unknown>
+  }
 }))
 
 vi.mock('@/hooks/useShortcutLabel', () => ({
@@ -49,6 +51,8 @@ vi.mock('@/components/ui/dropdown-menu', () => ({
 }))
 
 vi.mock('lucide-react', () => ({
+  Bell: () => null,
+  BellOff: () => null,
   ArrowDown: () => null,
   ArrowLeft: () => null,
   ArrowRight: () => null,
@@ -180,6 +184,8 @@ beforeEach(() => {
   moveMock.moveTabToNewPaneColumn.mockClear()
   storeMock.state = {
     keybindings: {},
+    notificationMutedTabIds: {},
+    setTabNotificationsMuted: vi.fn(),
     groupsByWorktree: {
       'wt-1': [
         {
@@ -234,6 +240,20 @@ describe('requestActiveTerminalPaneSplit', () => {
 })
 
 describe('SortableTabContextMenu', () => {
+  it.each([false, true])(
+    'toggles notifications for only the addressed tab (muted: %s)',
+    (muted) => {
+      const setMuted = vi.fn()
+      storeMock.state.notificationMutedTabIds = muted ? { 'term-1': true } : {}
+      storeMock.state.setTabNotificationsMuted = setMuted
+      const { container } = renderMenu({ isActive: false })
+      act(() =>
+        getButton(container, muted ? 'Enable Notifications' : 'Disable Notifications').click()
+      )
+      expect(setMuted).toHaveBeenCalledExactlyOnceWith('term-1', !muted)
+    }
+  )
+
   it.each([false, true])(
     'copies the workspace ID of an inactive tab (pinned: %s)',
     async (isPinned) => {

@@ -197,6 +197,7 @@ export function createTerminalTabCloseActions(
           }
           return {
             tabsByWorktree: next,
+            notificationMutedTabIds: omitByTabId(s.notificationMutedTabIds),
             activeTabId: s.activeTabId === tabId ? null : s.activeTabId,
             activeTabIdByWorktree: nextActiveTabIdByWorktree,
             ptyIdsByTabId: nextPtyIdsByTabId,

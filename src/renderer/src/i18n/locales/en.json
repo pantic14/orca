@@ -1,4 +1,11 @@
 {
+  "tabs": {
+    "notifications": {
+      "enable": "Enable Notifications",
+      "disable": "Disable Notifications",
+      "disabled": "Notifications disabled"
+    }
+  },
   "csv": {
     "detectingDelimiter": "Detecting delimiter…",
     "indexProgress": "Indexing CSV… {{percent}}%",

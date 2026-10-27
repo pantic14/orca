@@ -26,6 +26,7 @@ export type StoreState = {
   /** Pty id → the agent its pane restarts as once the account change lands. */
   pendingPaneAccountRestarts?: AppState['pendingPaneAccountRestarts']
   unreadTerminalTabs?: Record<string, true>
+  notificationMutedTabIds?: AppState['notificationMutedTabIds']
   deleteStateByWorktreeId?: Record<string, { isDeleting?: boolean; phase?: string }>
   worktreesByRepo: Record<
     string,

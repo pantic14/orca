@@ -90,6 +90,42 @@ beforeEach(() => {
 })
 
 describe('createNotificationDeliveryService', () => {
+  it.each(['agent-task-complete', 'terminal-bell'] as const)(
+    'silences 200 %s events in A without muting B, phones, tray or later events',
+    (source) => {
+      const settings = makeSettings()
+      const harness = makeHarness(settings)
+      const service = createNotificationDeliveryService(harness.deps)
+      for (let index = 0; index < 200; index += 1) {
+        expect(
+          service.dispatch(
+            makeRequest({
+              source,
+              paneKey: `tab-a:${LEAF}`,
+              desktopMuted: true,
+              attentionKey: `a-${index}`
+            })
+          )
+        ).toEqual({ delivered: false, reason: 'tab-muted' })
+      }
+      expect(harness.deliverNative).not.toHaveBeenCalled()
+      expect(harness.dispatchMobileNotification).toHaveBeenCalledTimes(200)
+      expect(harness.dispatchMobileNotification).toHaveBeenLastCalledWith(
+        expect.not.objectContaining({ desktopAllowed: false })
+      )
+      expect(harness.setTrayAttention).toHaveBeenCalledWith(true)
+      expect(service.dispatch(makeRequest({ source, paneKey: `tab-b:${LEAF}` }))).toEqual({
+        delivered: true
+      })
+      now += 60_000
+      expect(service.dispatch(makeRequest({ source, paneKey: `tab-a:${LEAF}` }))).toEqual({
+        delivered: true
+      })
+      expect(harness.deliverNative).toHaveBeenCalledTimes(2)
+      expect(settings).toEqual(makeSettings())
+    }
+  )
+
   it('lights the tray dot before the enabled/cooldown gates can reject the event', () => {
     const harness = makeHarness(makeSettings({ enabled: false }))
     const result = createNotificationDeliveryService(harness.deps).dispatch(makeRequest())

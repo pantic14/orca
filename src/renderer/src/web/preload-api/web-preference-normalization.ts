@@ -89,6 +89,7 @@ export function mergeHostWebUIState(
     agentsReadFilter: local.agentsReadFilter,
     agentsGroupBy: local.agentsGroupBy,
     activityClearedAtByPaneKey: local.activityClearedAtByPaneKey,
+    notificationMutedTabIds: local.notificationMutedTabIds,
     manuallyUnreadTurnsByPaneKey: local.manuallyUnreadTurnsByPaneKey
   } satisfies Record<PairingLocalUiField, unknown> & Partial<PersistedUIState>
   return {

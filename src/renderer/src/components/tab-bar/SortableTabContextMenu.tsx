@@ -1,4 +1,4 @@
-import { Pin, PinOff, Pencil, SquareTerminal, X, ListX } from 'lucide-react'
+import { Bell, BellOff, Pin, PinOff, Pencil, SquareTerminal, X, ListX } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -139,6 +139,8 @@ export function SortableTabContextMenu({
   nativeChat
 }: SortableTabContextMenuProps): React.JSX.Element {
   const keybindings = useAppStore((state) => state.keybindings)
+  const notificationsMuted = useAppStore((state) => Boolean(state.notificationMutedTabIds[tab.id]))
+  const setTabNotificationsMuted = useAppStore((state) => state.setTabNotificationsMuted)
   const splitRightShortcut = formatShortcutLabel('terminal.splitRight', keybindings)
   const splitDownShortcut = formatShortcutLabel('terminal.splitDown', keybindings)
 
@@ -199,6 +201,16 @@ export function SortableTabContextMenu({
             : translate('auto.components.tab.bar.SortableTabContextMenu.60f958ec75', 'Pin Tab')}
         </DropdownMenuItem>
         <CopyTabIdMenuItem unifiedTabId={unifiedTabId} />
+        <DropdownMenuItem onSelect={() => setTabNotificationsMuted(tab.id, !notificationsMuted)}>
+          {notificationsMuted ? (
+            <Bell className="size-3.5 shrink-0" />
+          ) : (
+            <BellOff className="size-3.5 shrink-0" />
+          )}
+          {notificationsMuted
+            ? translate('tabs.notifications.enable', 'Enable Notifications')
+            : translate('tabs.notifications.disable', 'Disable Notifications')}
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => !isPinned && onClose(tab.id)} disabled={isPinned}>
           <X className="size-3.5" />

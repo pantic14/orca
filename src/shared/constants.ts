@@ -246,6 +246,7 @@ export function getDefaultUIState(): PersistedUIState {
     acknowledgedAgentsByPaneKey: {},
     activityClearedAtByPaneKey: {},
     manuallyUnreadTurnsByPaneKey: {},
+    notificationMutedTabIds: {},
     setupGuideSidebarDismissed: false,
     setupGuideBrowserMilestoneMigrated: true,
     setupGuideBrowserMilestoneLegacyComplete: false,
